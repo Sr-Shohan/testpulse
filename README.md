@@ -3,6 +3,7 @@
 > **CI Test Intelligence** — turn noisy CI runs into clear signals: flaky-test
 > detection, pass-rate trends, stability matrices, build-vs-build comparison,
 > and a read-only public API.
+> live at : https://testpulseqa.vercel.app/
 
 TestPulse ships with a **built-in synthetic dataset**, so it runs with **zero
 external dependencies** — no CI server, no credentials, no network. Everything
