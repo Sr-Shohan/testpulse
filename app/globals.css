@@ -1,0 +1,276 @@
+@import "tailwindcss";
+
+/* ─── Enable class-based dark variant ──────────────────────────
+   Allows `dark:foo` utilities to react to `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Theme tokens ─────────────────────────────────────────────
+   We invert Tailwind's `slate` palette in light mode so the
+   existing dark-mode-designed UI translates correctly without
+   touching a single component class. slate-500 (true midpoint)
+   stays the same in both themes. */
+
+:root {
+  /* Light mode (default) — slate palette inverted */
+  --color-slate-50: oklch(0.129 0.042 264.695);   /* was slate-950 */
+  --color-slate-100: oklch(0.208 0.042 265.755);  /* was slate-900 */
+  --color-slate-200: oklch(0.279 0.041 260.031);  /* was slate-800 */
+  --color-slate-300: oklch(0.372 0.044 257.287);  /* was slate-700 */
+  --color-slate-400: oklch(0.446 0.043 257.281);  /* was slate-600 */
+  --color-slate-500: oklch(0.554 0.046 257.417);  /* unchanged */
+  --color-slate-600: oklch(0.704 0.04 256.788);   /* was slate-400 */
+  --color-slate-700: oklch(0.869 0.022 252.894);  /* was slate-300 */
+  --color-slate-800: oklch(0.929 0.013 255.508);  /* was slate-200 */
+  --color-slate-900: oklch(0.968 0.007 247.896);  /* was slate-100 */
+  --color-slate-950: oklch(0.984 0.003 247.858);  /* was slate-50  */
+
+  /* Semantic surface tokens used outside of utility classes */
+  --surface-page: 248 250 252;        /* slate-50  */
+  --surface-card: 255 255 255;        /* white     */
+  --surface-card-border: 226 232 240; /* slate-200 */
+  --surface-overlay: 15 23 42;        /* slate-900 */
+  --text-strong: 15 23 42;            /* slate-900 */
+  --text-muted: 71 85 105;            /* slate-600 */
+  --scrollbar-thumb: 148 163 184;     /* slate-400 */
+
+  /* Chart color tokens (read by recharts via useTheme) */
+  --chart-grid: #e2e8f0;     /* slate-200 */
+  --chart-axis: #94a3b8;     /* slate-400 */
+  --chart-tick: #64748b;     /* slate-500 */
+  --chart-cursor: rgba(15, 23, 42, 0.04);
+
+  /* ─── Accent palette shift for light mode ─────────────────────
+     The UI is densely styled with `text-rose-400`, `text-emerald-400`,
+     `text-amber-400`, etc. Those shades are tuned for dark backgrounds
+     and become unreadable on white. In light mode we shift the -300
+     and -400 stops two notches darker (≈ -500/-600 lightness) so error,
+     warning and accent text remains legible. Backgrounds based on -500
+     are intentionally left alone so `bg-rose-500/10` etc. stay subtle. */
+  --color-rose-300: oklch(0.645 0.246 16.439);   /* was rose-500 */
+  --color-rose-400: oklch(0.586 0.253 17.585);   /* was rose-600 */
+  --color-red-300: oklch(0.637 0.237 25.331);    /* was red-500 */
+  --color-red-400: oklch(0.577 0.245 27.325);    /* was red-600 */
+  --color-emerald-300: oklch(0.696 0.17 162.48);  /* was emerald-500 */
+  --color-emerald-400: oklch(0.596 0.145 163.225);/* was emerald-600 */
+  --color-amber-300: oklch(0.769 0.188 70.08);   /* was amber-500 */
+  --color-amber-400: oklch(0.666 0.179 58.318);  /* was amber-600 */
+  --color-yellow-300: oklch(0.795 0.184 86.047); /* was yellow-500 */
+  --color-yellow-400: oklch(0.681 0.162 75.834); /* was yellow-600 */
+  --color-orange-300: oklch(0.705 0.213 47.604); /* was orange-500 */
+  --color-orange-400: oklch(0.646 0.222 41.116); /* was orange-600 */
+  --color-blue-300: oklch(0.623 0.214 259.815);  /* was blue-500 */
+  --color-blue-400: oklch(0.546 0.245 262.881);  /* was blue-600 */
+  --color-indigo-300: oklch(0.585 0.233 277.117);/* was indigo-500 */
+  --color-indigo-400: oklch(0.511 0.262 276.966);/* was indigo-600 */
+  --color-violet-300: oklch(0.606 0.25 292.717); /* was violet-500 */
+  --color-violet-400: oklch(0.541 0.281 293.009);/* was violet-600 */
+  --color-cyan-300: oklch(0.715 0.143 215.221);  /* was cyan-500 */
+  --color-cyan-400: oklch(0.609 0.126 221.723);  /* was cyan-600 */
+  --color-teal-300: oklch(0.704 0.14 182.503);   /* was teal-500 */
+  --color-teal-400: oklch(0.6 0.118 184.704);    /* was teal-600 */
+  --color-sky-300: oklch(0.685 0.169 237.323);   /* was sky-500 */
+  --color-sky-400: oklch(0.588 0.158 241.966);   /* was sky-600 */
+  --color-fuchsia-300: oklch(0.667 0.295 322.15);/* was fuchsia-500 */
+  --color-fuchsia-400: oklch(0.591 0.293 322.896);/* was fuchsia-600 */
+  --color-pink-300: oklch(0.656 0.241 354.308); /* was pink-500 */
+  --color-pink-400: oklch(0.592 0.249 0.584);   /* was pink-600 */
+}
+
+:root.dark {
+  /* Dark mode — restore Tailwind's stock slate palette */
+  --color-slate-50: oklch(0.984 0.003 247.858);
+  --color-slate-100: oklch(0.968 0.007 247.896);
+  --color-slate-200: oklch(0.929 0.013 255.508);
+  --color-slate-300: oklch(0.869 0.022 252.894);
+  --color-slate-400: oklch(0.704 0.04 256.788);
+  --color-slate-500: oklch(0.554 0.046 257.417);
+  --color-slate-600: oklch(0.446 0.043 257.281);
+  --color-slate-700: oklch(0.372 0.044 257.287);
+  --color-slate-800: oklch(0.279 0.041 260.031);
+  --color-slate-900: oklch(0.208 0.042 265.755);
+  --color-slate-950: oklch(0.129 0.042 264.695);
+
+  --surface-page: 2 6 23;             /* slate-950 */
+  --surface-card: 15 23 42;           /* slate-900 */
+  --surface-card-border: 30 41 59;    /* slate-800 */
+  --surface-overlay: 2 6 23;
+  --text-strong: 248 250 252;
+  --text-muted: 148 163 184;
+  --scrollbar-thumb: 71 85 105;       /* slate-600 */
+
+  --chart-grid: #1e293b;
+  --chart-axis: #475569;
+  --chart-tick: #64748b;
+  --chart-cursor: rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Body / global typography ──────────────────────────────── */
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: rgb(var(--surface-page));
+  color: rgb(var(--text-strong));
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--scrollbar-thumb) / 0.5);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--scrollbar-thumb) / 0.8);
+}
+
+/* ─── Glassmorphism Card ─────────────────────────────────────── */
+/* Cards in light mode use a near-white surface with a soft
+   shadow so they read as elevated rather than blending in. */
+
+.glass-card {
+  @apply backdrop-blur-md rounded-xl overflow-hidden border;
+  background-color: rgb(var(--surface-card) / 0.7);
+  border-color: rgb(var(--surface-card-border) / 0.7);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 16px rgba(15, 23, 42, 0.04);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dark .glass-card {
+  background-color: rgb(15 23 42 / 0.5);
+  border-color: rgb(30 41 59 / 0.6);
+  box-shadow: none;
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(59, 130, 246, 0.15); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(127, 127, 127, 0.06) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ─── Skeleton Loading ──────────────────────────────────────── */
+
+.skeleton {
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--surface-card-border) / 0.5) 25%,
+    rgb(var(--surface-card-border) / 0.8) 50%,
+    rgb(var(--surface-card-border) / 0.5) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ─── Error / Warning <pre> code blocks ───────────────────────
+   In light mode the inverted slate bg makes these blocks blend
+   into the surrounding card. Give them a faint rose/amber tint
+   so error stack traces still read as "an error excerpt". */
+
+:root:not(.dark) pre.font-mono[class*="border-rose-"] {
+  background-color: oklch(0.971 0.013 17.38 / 0.55); /* rose-50 ish */
+  border-color: oklch(0.892 0.058 10.001 / 0.7);     /* rose-200 ish */
+  color: oklch(0.514 0.222 16.935);                  /* rose-700 */
+}
+:root:not(.dark) pre.font-mono[class*="border-amber-"] {
+  background-color: oklch(0.987 0.022 95.277 / 0.6); /* amber-50 ish */
+  border-color: oklch(0.879 0.169 91.605 / 0.6);     /* amber-300 ish */
+  color: oklch(0.555 0.163 48.998);                  /* amber-700 */
+}
+
+/* ─── Score Badges ──────────────────────────────────────────── */
+
+.score-critical {
+  @apply bg-gradient-to-r from-rose-500/15 to-red-500/15 border-rose-500/30 text-rose-500;
+}
+
+.score-warning {
+  @apply bg-gradient-to-r from-amber-500/15 to-orange-500/15 border-amber-500/30 text-amber-500;
+}
+
+.score-moderate {
+  @apply bg-gradient-to-r from-yellow-500/15 to-amber-400/15 border-yellow-500/30 text-yellow-600;
+}
+
+.dark .score-critical { @apply text-rose-400; }
+.dark .score-warning { @apply text-amber-400; }
+.dark .score-moderate { @apply text-yellow-400; }
+
+/* ─── Table Utilities ───────────────────────────────────────── */
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
